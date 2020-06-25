@@ -1,42 +1,67 @@
-class Personagem {
+class Personagem extends Animacao{
   
-  constructor(imagem) {
-    this.imagem = imagem;
-    this.matriz = [
-      [0,0],
-      [220,0],
-      [440,0],
-      [660,0],
-      [0,270],
-      [220,270],
-      [440,270],
-      [660,270],
-      [0,540],
-      [220,540],
-      [440,540],
-      [660,540],
-      [0,810],
-      [220,810],
-      [440,810],
-      [660,810]
-    ]
+  constructor(matriz, imagem, x, largura, altura, larguraSprite, alturaSprite){
+    super(matriz, imagem, x, largura, altura, larguraSprite, alturaSprite)
+  
+    this.yInicial = height - this.altura
+    this.y = this.yInicial
     
-    this.frameAtual = 0;
+    this.velocidadeDoPulo = 0;
+    this.gravidade = 3;
+    
+    this.qtdPulos;
   }
 
-  exibe(){
-      image(imagemPersonagem, 0, height-altura_personagem, 110, altura_personagem, this.matriz[this.frameAtual][0], this.matriz[this.frameAtual][1], 220, 270)
-            //imagem, pos,pos, tamanho, tamanho, mapa_sprite, mapa_sprite, tamanho, tamanho
-    
-    this.anima()
-  }  
-  
-  anima() {
-    this.frameAtual++;
-    
-    if (this.frameAtual === this.matriz.length-1)
-      this.frameAtual=0
-  
+  pula() {
+    if (this.qtdPulos < 2) 
+      this.velocidadeDoPulo = - 30;
+    this.qtdPulos++;
+    //console.log(this.qtdPulos)
   }
 
+  
+  aplicaGravidade() {
+    this.y = this.y + this.velocidadeDoPulo;
+    this.velocidadeDoPulo = this.velocidadeDoPulo + this.gravidade;
+    
+    if (this.y > this.yInicial){
+      this.y = this.yInicial;
+    }
+    
+    if (this.y === this.yInicial) {
+      this.qtdPulos=0;
+    }
+    
+    console.log(this.y + ' e ' + this.yInicial)
+  }
+  
+  estaColidindo(inimigo) {
+      const precisao_hitBox = 0.7;
+    
+      noFill();
+    
+      rect( this.x,
+                     this.y,
+                     this.largura * precisao_hitBox,
+                     this.altura * precisao_hitBox)
+    
+          rect( inimigo.x,
+                      inimigo.y,
+                      inimigo.largura * precisao_hitBox,
+                      inimigo.altura * precisao_hitBox)
+    
+      const colisao = collideRectRect(
+                      this.x,
+                     this.y,
+                     this.largura,
+                     this.altura,
+                      inimigo.x,
+                      inimigo.y,
+                      inimigo.largura,
+                      inimigo.altura
+                     );
+    
+    return colisao;
+  }
+  
 }
